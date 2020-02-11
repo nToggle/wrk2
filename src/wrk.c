@@ -267,7 +267,7 @@ void *thread_main(void *arg) {
 
     connection *c = thread->cs;
 
-    long stagger_ms = 100
+    long stagger_ms = 100;
 
     for (uint64_t i = 0; i < thread->connections; i++, c++) {
         c->thread     = thread;
