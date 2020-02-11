@@ -267,6 +267,8 @@ void *thread_main(void *arg) {
 
     connection *c = thread->cs;
 
+    long stagger_ms = 100
+
     for (uint64_t i = 0; i < thread->connections; i++, c++) {
         c->thread     = thread;
         c->ssl        = cfg.ctx ? SSL_new(cfg.ctx) : NULL;
@@ -277,11 +279,11 @@ void *thread_main(void *arg) {
         c->complete   = 0;
         c->caught_up  = true;
         // Stagger connects 5 msec apart within thread:
-        aeCreateTimeEvent(loop, i * 5, delayed_initial_connect, c, NULL);
+        aeCreateTimeEvent(loop, i * stagger_ms, delayed_initial_connect, c, NULL);
     }
 
-    uint64_t calibrate_delay = CALIBRATE_DELAY_MS + (thread->connections * 5);
-    uint64_t timeout_delay = TIMEOUT_INTERVAL_MS + (thread->connections * 5);
+    uint64_t calibrate_delay = CALIBRATE_DELAY_MS + (thread->connections * stagger_ms);
+    uint64_t timeout_delay = TIMEOUT_INTERVAL_MS + (thread->connections * stagger_ms);
 
     aeCreateTimeEvent(loop, calibrate_delay, calibrate, thread, NULL);
     aeCreateTimeEvent(loop, timeout_delay, check_timeouts, thread, NULL);
